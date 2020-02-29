@@ -1,47 +1,86 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, Component } from "react";
 import Products from "./Products";
 import DiscountRules from "./DiscountRules";
 import CheckoutList from "./CheckoutList";
 import PageTitle from "./PageTitle";
+import '../styles/app.css';
 
-const App = () => {
-  const [productList, setProductList] = useState([]);
-  const [discountRules, setDiscountRules] = useState({});
-  const [checkoutList, setCheckoutList] = useState([]);
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      productList: [],
+      discountRules: {},
+      bucketList: [],
+      checkoutList: [],
+    }
+  }
 
-  const addProductData = data => {
-    const productData = productList;
-    productData.push(data);
-    setProductList(productData);
+  addProductData = data => {
+    const { productList } = this.state;
+    productList.push(data);
+    this.setState({
+      productList,
+    })
   };
 
-  const addRulesData = data => {
-    setDiscountRules(data);
+  addRulesData = data => {
+    this.setState({
+      discountRules: data,
+    })
   };
 
-  const handleCheckout = rules => {
-    const checkoutData = checkoutList;
-    checkoutData.push(rules);
-    setCheckoutList(checkoutData);
+  handleCheckout = rules => {
+    const { checkoutList } = this.state;
+    checkoutList.push(rules);
+    this.setState({
+      checkoutList,
+    })
   };
 
-  return (
-    <Fragment>
-      <PageTitle title="Order Checkout App" />
-      <Products
-        productList={productList}
-        onAddProduct={data => addProductData(data)}
-      />
-      <DiscountRules
-        discountRules={discountRules}
-        onAddRules={data => addRulesData(data)}
-      />
-      <CheckoutList
-        checkoutList={checkoutList}
-        onCheckoutClick={() => handleCheckout(discountRules)}
-      />
-    </Fragment>
-  );
-};
+  onDeleteProduct = product => {
+    const { productList, bucketList } = this.state;
+    const newProductList = productList.filter(item => item.code !== product.code);
+    const newBucketList = bucketList.filter(item => item.code !== product.code);
+    this.setState({
+      productList: newProductList,
+      bucketList: newBucketList,
+    })
+
+  };
+
+  addToCart = product => {
+    const { bucketList } = this.state;
+    bucketList.push(product);
+    this.setState({
+      bucketList,
+    })
+  };
+
+  render() {
+    const { productList, discountRules, checkoutList, bucketList } = this.state;
+    return (
+      <Fragment>
+        <PageTitle title="Order Checkout App" />
+        <Products
+          productList={productList}
+          onAddProduct={data => this.addProductData(data)}
+          onDeleteProduct = {key => this.onDeleteProduct(key)}
+          onAddToCart = {item => this.addToCart(item)}
+        />
+        <DiscountRules
+          discountRules={discountRules}
+          onAddRules={data => this.addRulesData(data)}
+          productList={productList}
+        />
+        <CheckoutList
+          checkoutList={checkoutList}
+          bucketList={bucketList}
+          onCheckoutClick={() => this.handleCheckout(discountRules)}
+        />
+      </Fragment >
+    );
+  };
+}
 
 export default App;

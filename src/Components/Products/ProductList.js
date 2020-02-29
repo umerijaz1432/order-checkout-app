@@ -11,7 +11,7 @@ const ProductList = props => {
             <tr>
               <th>Product Code</th>
               <th>Product Name</th>
-              <th>Product Prize</th>
+              <th>Product Price</th>
               <th></th>
             </tr>
             {productList.map((item, key) => {
@@ -19,7 +19,7 @@ const ProductList = props => {
                 <tr key={key}>
                   <td>{item.code}</td>
                   <td>{item.name}</td>
-                  <td>$ {item.prize}</td>
+                  <td>$ {item.price}</td>
                   <td>
                     <button onClick={() => onAddToCart(item)} className="btn-small">Add to Cart</button>
                     <button onClick={() => onDeleteProduct(item)} className="btn-small">Delete</button></td>

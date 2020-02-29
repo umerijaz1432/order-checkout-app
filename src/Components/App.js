@@ -10,7 +10,13 @@ class App extends Component {
     super(props);
     this.state = {
       productList: [],
-      discountRules: {},
+      discountRules: {
+        maxAmount: 30,
+        offPercentage: 10,
+        maxNumOrder: 2,
+        productCode: '',
+        dropPrice: 3.89,
+      },
       bucketList: [],
       checkoutList: [],
     }
@@ -31,11 +37,37 @@ class App extends Component {
   };
 
   handleCheckout = rules => {
-    const { checkoutList } = this.state;
-    checkoutList.push(rules);
-    this.setState({
-      checkoutList,
-    })
+    const { checkoutList, bucketList } = this.state;
+    if (bucketList.length > 0) {
+      let totalAmount = 0;
+      let itemCodes = [];
+      let multiOrderOffer = [];
+      let dropCharges = 0;
+      let data = {};
+      for (let i = 0; i < bucketList.length; i++) {
+        totalAmount = Number(totalAmount) + Number(bucketList[i].price);
+        itemCodes.push(bucketList[i].code);
+        data = {
+          itemCodes,
+          totalAmount,
+        }
+        if (rules.productCode && bucketList[i].code === rules.productCode){
+            multiOrderOffer.push(bucketList[i].code);
+        }
+      }
+      if (rules.maxAmount && totalAmount > rules.maxAmount){
+        dropCharges = Number(dropCharges) + (Number(totalAmount)/100) * Number(rules.offPercentage);
+      } 
+     if (multiOrderOffer.length >= rules.maxNumOrder){
+      dropCharges = Number(dropCharges) + Number(rules.dropPrice);
+      }
+      data.totalAmount = Number(totalAmount) - Number(dropCharges);
+      checkoutList.push(data);
+      this.setState({
+        checkoutList,
+        bucketList: [],
+      })
+    }
   };
 
   onDeleteProduct = product => {
@@ -65,8 +97,8 @@ class App extends Component {
         <Products
           productList={productList}
           onAddProduct={data => this.addProductData(data)}
-          onDeleteProduct = {key => this.onDeleteProduct(key)}
-          onAddToCart = {item => this.addToCart(item)}
+          onDeleteProduct={key => this.onDeleteProduct(key)}
+          onAddToCart={item => this.addToCart(item)}
         />
         <DiscountRules
           discountRules={discountRules}

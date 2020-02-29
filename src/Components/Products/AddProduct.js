@@ -5,20 +5,20 @@ const AddProduct = props => {
   const { onAddProduct, productList } = props;
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
-  const [prize, setPrize] = useState('');
+  const [price, setPrice] = useState('');
 
   const onClearClick = () => {
     setCode('');
     setName('');
-    setPrize('');
+    setPrice('');
   }
 
   const onAddClick = () => {
-    if (code && name && prize){
+    if (code && name && price){
     const data = {
       code,
       name,
-      prize
+      price
     }
     const isDataExist = productList.filter(item => item.code === code);
     if (isDataExist.length > 0){
@@ -36,7 +36,7 @@ const AddProduct = props => {
       <h4>Add Product</h4>
         <input onChange={e => setCode(e.target.value)} value={code} placeholder="Enter Product Code" />
         <input onChange={e => setName(e.target.value)} value={name} placeholder="Enter Product Name" />
-        <input onChange={e => setPrize(e.target.value)} type="number" value={prize} placeholder="Enter Product Prize" />
+        <input onChange={e => setPrice(e.target.value)} type="number" value={price} placeholder="Enter Product Price" />
         <button className="btn" onClick={onClearClick}>Clear</button>
         <button className="btn" onClick={onAddClick}>Add Product</button>
       </div>
